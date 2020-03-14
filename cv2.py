@@ -1,4 +1,4 @@
-from ppds import Mutex, Event, Semaphore, Thread
+from fei.ppds import Mutex, Event, Semaphore, Thread
 from random import randint
 from time import sleep
 
@@ -20,7 +20,7 @@ def ko(thread_id):
 
 
 # Task 1 - preloaded Turnstile
-""" class SimpleBarrier():
+""" class SimpleBarrier:
     def __init__(self, N):
         self.N = N
         self.semaphore = Semaphore(0)
@@ -41,7 +41,7 @@ def ko(thread_id):
 
 
 # Task 2 - simple barrier
-""" class Shared():
+""" class Shared:
     def __init__(self, N):
         self.N = N
         self.count = 0
@@ -151,7 +151,7 @@ def thread_function(shared, thread_id):
 
 
 # Version 2
-class Shared():
+class Shared:
     def __init__(self, N):
         self.N = N
         self.fib_seq = [0, 1] + [0] * N

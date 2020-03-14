@@ -1,7 +1,7 @@
-from ppds import Mutex, Thread
+from fei.ppds import Mutex, Thread
 
 
-class Shared():
+class Shared:
     def __init__(self, n):
         self.counter = 0
         self.end = n
