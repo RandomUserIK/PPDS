@@ -86,7 +86,7 @@ def agent_3(shared):
 
 ###########################################################################
 
-# Smokers problem solution
+# Smokers problem solution #1
 class Shared2:
     def __init__(self):
         self.isPaper = False
@@ -180,8 +180,74 @@ def smoker_paper2(shared):
         smoke()
 
 
+###########################################################################
+
+# Generalized Smokers problem solution
+class Shared3:
+    def __init__(self):
+        self.isPaper = 0
+        self.isMatches = 0
+        self.isTobacco = 0
+
+        self.mutex = Mutex()
+        self.agentSem = Semaphore(1)
+
+        self.tobacco = Semaphore(0)
+        self.paper = Semaphore(0)
+        self.matches = Semaphore(0)
+
+        self.pusherTobacco = Semaphore(0)
+        self.pusherPaper = Semaphore(0)
+        self.pusherMatches = Semaphore(0)
+
+
+def pusher_waiting_tobacco2(shared):
+    while True:
+        shared.tobacco.wait()
+        shared.mutex.lock()
+        if shared.isPaper:
+            shared.isPaper -= 1
+            shared.pusherMatches.signal()
+        elif shared.isMatches:
+            shared.isMatches -= 1
+            shared.pusherPaper.signal()
+        else:
+            shared.isTobacco += 1
+        shared.mutex.unlock()
+
+
+def pusher_waiting_matches2(shared):
+    while True:
+        shared.matches.wait()
+        shared.mutex.lock()
+        if shared.isPaper:
+            shared.isPaper -= 1
+            shared.pusherTobacco.signal()
+        elif shared.isTobacco:
+            shared.isTobacco -= 1
+            shared.pusherPaper.signal()
+        else:
+            shared.isMatches += 1
+        shared.mutex.unlock()
+
+
+def pusher_waiting_paper2(shared):
+    while True:
+        shared.paper.wait()
+        shared.mutex.lock()
+        if shared.isTobacco:
+            shared.isTobacco -= 1
+            shared.pusherMatches.signal()
+        elif shared.isMatches:
+            shared.isMatches -= 1
+            shared.pusherTobacco.signal()
+        else:
+            shared.isPaper += 1
+        shared.mutex.unlock()
+
+
 def main():
-    shared = Shared2()
+    shared = Shared3()
 
     smokers = []
     agents = []
@@ -195,9 +261,9 @@ def main():
     agents.append(Thread(agent_2, shared))
     agents.append(Thread(agent_3, shared))
 
-    pushers.append(Thread(pusher_waiting_matches, shared))
-    pushers.append(Thread(pusher_waiting_paper, shared))
-    pushers.append(Thread(pusher_waiting_tobacco, shared))
+    pushers.append(Thread(pusher_waiting_matches2, shared))
+    pushers.append(Thread(pusher_waiting_paper2, shared))
+    pushers.append(Thread(pusher_waiting_tobacco2, shared))
 
     for thread in smokers + agents + pushers:
         thread.join()
