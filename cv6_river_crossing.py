@@ -54,7 +54,7 @@ def hacker(shared, hacker_id):
             is_captain = True
             shared.hackers = 0
             shared.serfs -= 2
-            shared.hackers_queue.signal(2)
+            shared.hackers_queue.signal(2)  # ten kto robi signal, obehne ostatnych
             shared.serfs_queue.signal(2)
         else:
             shared.mutex.unlock()

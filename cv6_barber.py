@@ -50,7 +50,7 @@ def customer(shared, customer_id):
         if shared.customers == shared.n:
             # if there aren't any, leave
             balk(customer_id)
-            shared.mutex.unlock() # if this is omitted - deadlock will occur
+            shared.mutex.unlock()  # if this is omitted - deadlock will occur
             continue
         else:
             # if yes, proceed

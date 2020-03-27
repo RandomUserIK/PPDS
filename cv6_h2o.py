@@ -46,7 +46,7 @@ def bond(molecule_id):
 def oxygen(shared):
     shared.mutex.lock()
     shared.oxygen += 1
-    if shared.oxygen < 2:
+    if shared.hydrogen < 2:
         shared.mutex.unlock()
     else:
         shared.oxygen -= 1
