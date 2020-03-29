@@ -26,9 +26,10 @@ class LightSwitch:
 
 class Shared:
     def __init__(self):
-        self.room_empty = Semaphore(1)
-        self.turnstile = Semaphore(1, 'fifo')  # to avoid starvation
+        self.no_writers = Semaphore(1)
+        self.no_readers = Semaphore(1, 'fifo')
         self.read_ls = LightSwitch()
+        self.write_ls = LightSwitch()
 
 
 def reading(thread_id):
@@ -43,22 +44,25 @@ def writing(thread_id):
 
 def reader(shared, thread_id):
     while True:
-        shared.turnstile.wait()
-        shared.turnstile.signal()
+        shared.no_readers.wait()
 
-        shared.read_ls.lock(shared.room_empty)  # kategoria pouzivajuca ls moze byt zvyhodnena
+        shared.read_ls.lock(shared.no_writers)
+
+        shared.no_readers.signal()  # tymto zarucime, aby r() nebol predbehnuty w()
+
         reading(thread_id)
-        shared.read_ls.unlock(shared.room_empty)
+        shared.read_ls.unlock(shared.no_writers)
 
 
 def writer(shared, thread_id):
     while True:
-        shared.turnstile.wait()
-        shared.room_empty.wait()
+        shared.write_ls.lock(shared.no_readers)
+
+        shared.no_writers.wait()
         writing(thread_id)
-        # shared.turnstile.signal()  - less effective
-        shared.room_empty.signal()
-        shared.turnstile.signal()
+        shared.no_writers.signal()
+
+        shared.write_ls.unlock(shared.no_readers)
 
 
 def main():
