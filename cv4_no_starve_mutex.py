@@ -27,10 +27,9 @@ def thread_func(shared, thread_id):
 
         if shared.room1 == 0:
             shared.turnstile2.signal()  # if all threads have left the room 1, let the waiting threads enter room 2
-            shared.mutex.unlock()
         else:
             shared.turnstile1.signal()  # otherwise, let a random waiting thread pass from room 1 to room 2
-            shared.mutex.unlock()
+        shared.mutex.unlock()
 
         shared.turnstile2.wait()
         # threads pass again one by one
