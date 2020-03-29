@@ -1,24 +1,27 @@
-from fei.ppds import Mutex, Semaphore, Thread
+from fei.ppds import Mutex, Event, Thread, print
 
 from random import randint
 from time import sleep
 
 
-class SimpleBarrier:
+class EventBarrier:
     def __init__(self, n):
         self.n = n
         self.counter = 0
         self.mutex = Mutex()
-        self.b = Semaphore(0)
+        self.event = Event()
 
     def barrier(self):
         self.mutex.lock()
         self.counter += 1
         if self.counter == self.n:
             self.counter = 0
-            self.b.signal(self.n)
-        self.mutex.unlock()
-        self.b.wait()
+            self.event.set()
+            self.event.clear()
+            self.mutex.unlock()
+        else:
+            self.mutex.unlock()
+            self.event.wait()
 
 
 def barrier_example(barrier, thread_id):
@@ -29,5 +32,5 @@ def barrier_example(barrier, thread_id):
 
 
 N = 5
-barrier = SimpleBarrier(N)
+barrier = EventBarrier(N)
 threads = [Thread(barrier_example, barrier, i) for i in range(N)]

@@ -9,7 +9,8 @@ class Shared:
         self.n = n
         self.counter = 0
         self.mutex = Mutex()
-        self.turnstile = Semaphore(0)
+        self.turnstile1 = Semaphore(0)
+        self.turnstile2 = Semaphore(1)
 
 
 def rendezvous(thread_id):
@@ -29,18 +30,22 @@ def barrier(shared, thread_id):
         shared.mutex.lock()
         shared.counter += 1
         if shared.counter == shared.n:
-            shared.turnstile.signal(shared.n)
+            shared.turnstile2.wait()
+            shared.turnstile1.signal()
         shared.mutex.unlock()
-        shared.turnstile.wait()
+        shared.turnstile1.wait()
+        shared.turnstile1.signal()
 
         ko(thread_id)
 
         shared.mutex.lock()
         shared.counter -= 1
         if shared.counter == 0:
-            shared.turnstile.signal(shared.n)
+            shared.turnstile1.wait()
+            shared.turnstile2.signal()
         shared.mutex.unlock()
-        shared.turnstile.wait()
+        shared.turnstile2.wait()
+        shared.turnstile2.signal()
 
 
 N = 5
