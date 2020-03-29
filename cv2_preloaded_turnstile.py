@@ -43,6 +43,14 @@ def barrier(shared, thread_id):
         shared.turnstile.wait()
 
 
-N = 5
-shared = Shared(N)
-threads = [Thread(barrier, shared, i) for i in range(N)]
+def main():
+    N = 5
+    shared = Shared(N)
+    threads = [Thread(barrier, shared, i) for i in range(N)]
+
+    for t in threads:
+        t.join()
+
+
+if __name__ == "__main__":
+    main()

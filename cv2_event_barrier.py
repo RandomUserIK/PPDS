@@ -31,6 +31,14 @@ def barrier_example(barrier, thread_id):
     print(f'Thread {thread_id} leaving barrier.')
 
 
-N = 5
-barrier = EventBarrier(N)
-threads = [Thread(barrier_example, barrier, i) for i in range(N)]
+def main():
+    N = 5
+    barrier = EventBarrier(N)
+    threads = [Thread(barrier_example, barrier, i) for i in range(N)]
+
+    for t in threads:
+        t.join()
+
+
+if __name__ == "__main__":
+    main()

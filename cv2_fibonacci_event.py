@@ -33,11 +33,16 @@ def fibonacci(shared, thread_id):
             shared.event.wait()
 
 
-N = 10
-shared = Shared(N)
-threads = [Thread(fibonacci, shared, i) for i in range(N)]
+def main():
+    N = 10
+    shared = Shared(N)
+    threads = [Thread(fibonacci, shared, i) for i in range(N)]
 
-for t in threads:
-    t.join()
+    for t in threads:
+        t.join()
 
-print(shared.elem_arr)
+    print(shared.elem_arr)
+
+
+if __name__ == "__main__":
+    main()

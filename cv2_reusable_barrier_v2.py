@@ -39,6 +39,14 @@ def barrier(b, thread_id):
         b.barrier()
 
 
-N = 5
-b = SimpleBarrier(N)
-threads = [Thread(barrier, b, i) for i in range(N)]
+def main():
+    N = 5
+    b = SimpleBarrier(N)
+    threads = [Thread(barrier, b, i) for i in range(N)]
+
+    for t in threads:
+        t.join()
+
+
+if __name__ == "__main__":
+    main()
