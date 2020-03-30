@@ -31,33 +31,47 @@ class Barrier:
 
 
 class Shared:
-    def __init__(self, c):
+    def __init__(self, c, m):
         self.c = c
+        self.m = m
         self.board_queue = Semaphore(0)
         self.unboard_queue = Semaphore(0)
         self.boarded = Semaphore(0)
         self.unboarded = Semaphore(0)
         self.barrier = Barrier(self.c)
+        self.loading_area = [Semaphore(0) for i in range(m)]
+        self.unloading_area = [Semaphore(0) for i in range(m)]
+
+    def next_car(self, id_car):
+        return (id_car + 1) % self.m
 
 
-def car(shared):
+def car(shared, id_car):
     while True:
+        # pred nastupovanim, caka na loading_area
+        shared.loading_area[id_car].wait()
+
         # otvorenie dveri
-        load()
+        load(id_car)
         shared.board_queue.signal(shared.c)
 
         # musi cakat, kym sa mu neoznami, ze vsetci nastupili
         shared.boarded.wait()  # posledny, ktory nastupi, by mal toto signalizovat
 
+        shared.loading_area[shared.next_car(id_car)].signal()
+
         # pusti jazdu
-        run()
+        run(id_car)
+
+        shared.unloading_area[id_car].wait()
 
         # pusti pasazierov
-        unload()
+        unload(id_car)
         shared.unboard_queue.signal(shared.c)
 
         # musi cakat, kym vsetci neodidu
         shared.unboarded.wait()
+        shared.unloading_area[shared.next_car(id_car)].signal()
 
 
 def passenger(shared, id_passenger):
@@ -80,13 +94,13 @@ def passenger(shared, id_passenger):
         shared.barrier.wait(shared.unboarded)
 
 
-def load():
-    print("Train loading passengers.")
+def load(id_car):
+    print(f"Train {id_car}: loading passengers.")
     # load iba ako signalizacia, oneskorenie na strane pasazierov
 
 
-def unload():
-    print("Train unloading passengers.")
+def unload(id_car):
+    print(f"Train {id_car}: unloading passengers.")
 
 
 def board(id_passenger):
@@ -99,18 +113,23 @@ def unboard(id_passenger):
     sleep(randint(50, 200) / 100)
 
 
-def run():
-    print("Train running.")
+def run(id_car):
+    print(f"Train {id_car}: running.")
     sleep(randint(50, 300) / 100)
 
 
 def main():
     c = 4
-    shared = Shared(c)
-    for i in range(5):
+    m = 3
+    shared = Shared(c, m)
+    for i in range(15):
         Thread(passenger, shared, i)
 
-    Thread(car, shared)
+    for i in range(m):
+        Thread(car, shared, i)
+
+    shared.loading_area[0].signal()
+    shared.unloading_area[0].signal()
 
 
 if __name__ == "__main__":
