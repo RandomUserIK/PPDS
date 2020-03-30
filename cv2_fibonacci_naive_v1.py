@@ -1,7 +1,7 @@
-from fei.ppds import Semaphore, Thread, print
-
 from random import randint
 from time import sleep
+
+from fei.ppds import Semaphore, Thread, print
 
 
 class Shared:

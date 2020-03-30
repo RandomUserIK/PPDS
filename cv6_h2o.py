@@ -1,7 +1,15 @@
-from fei.ppds import Thread, Mutex, Semaphore, print
-
 from random import randint, choice
 from time import sleep
+
+from fei.ppds import Thread, Mutex, Semaphore, print
+
+
+# potreba za barierou - kazde vlakno musi cakat pokym sa nebude moct vytvorit molekula
+# musia sa pockat predtym nez povolia dalsej trojici pokracovat
+# pouzitie scoreboardu
+# ked frontu modelujeme semaforom - na zaciatku init 0
+# asymetricke riesenie synchronizacie - mutex sa odomkyna iba na strane kyslika
+# co H2O3 ? --> river crossing
 
 
 class Barrier:

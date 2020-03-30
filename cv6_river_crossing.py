@@ -1,7 +1,15 @@
-from fei.ppds import Thread, Mutex, Semaphore, print
-
 from random import randint
 from time import sleep
+
+from fei.ppds import Thread, Mutex, Semaphore, print
+
+
+# specialna bariera - umoznuje prechadzat rieku iba istym kombinaciam vlakien
+# lodka nesmie opustit breh inak, nez ked je naplnena
+# cakanie a potrebujeme formovat kolko ktorych - FRONTA pomocou semaforov
+# ale nevieme si vypocitat kolko ich je -> POCITADLO -> MUTEX
+# ked potrebujeme aby jedno vlakno nieco spravilo - potrebujeme ho specialne oznacit
+# toto oznacenie je lokalna premenna, ktora sa nastavi podla nejakeho STAVU
 
 
 class SimpleBarrier:
@@ -47,6 +55,7 @@ def hacker(shared, hacker_id):
         shared.mutex.lock()
         shared.hackers += 1
         if shared.hackers == 4:
+            # ak by bolo opacne, tato podmienka by bola pravdiva iba ak by pocet serfov bol mensi nez 2
             is_captain = True
             shared.hackers = 0
             shared.hackers_queue.signal(4)
@@ -54,6 +63,7 @@ def hacker(shared, hacker_id):
             is_captain = True
             shared.hackers = 0
             shared.serfs -= 2
+            # nemozeme nulovat, moze prist 200 serfov a po nich iba pridu hackeri, tu len urcite vieme ze su dvaja
             shared.hackers_queue.signal(2)  # ten kto robi signal, obehne ostatnych
             shared.serfs_queue.signal(2)
         else:

@@ -1,7 +1,8 @@
-from fei.ppds import Thread, Mutex, Semaphore, print
-
 from random import randint
 from time import sleep
+
+from fei.ppds import Thread, Mutex, Semaphore, print
+
 
 # nemozno pouzit Event - ked je nastavena udalost prechadzaju vsetci
 #                      - ked je vynulovana vsetci cakaju
@@ -9,6 +10,11 @@ from time import sleep
 # rozdiel medzi udalostou a semaforom - pri udalosti nevieme urcit, kolkym je doruceny signal
 #                                     - pri semafore vieme presne kolkym moze byt doruceny, bez toho aby sa zablokovali
 # pri pouziti slabeho semaforu nastane predbiehanie zakaznikov
+# vchadzanie do holicstva - konkurentne
+# samotna fronta semaforov by nam nestacila, potrebujeme aj pocitadlo
+# scoreboard - kolko je obsadenych stoliciek
+# 2x rendezvous
+# rendezvous nie je implementovane optimalne - mohlo by byt, nepokazi sa program
 
 class Shared:
     def __init__(self, n):

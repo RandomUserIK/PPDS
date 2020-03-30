@@ -1,8 +1,5 @@
 from fei.ppds import Mutex, Event, Thread, print
 
-from random import randint
-from time import sleep
-
 
 class Shared:
     def __init__(self, n):

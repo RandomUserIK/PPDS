@@ -1,4 +1,4 @@
-from fei.ppds import Thread, Mutex, Semaphore, print
+from fei.ppds import Mutex, Semaphore
 
 
 class Shared:

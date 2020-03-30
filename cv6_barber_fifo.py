@@ -1,7 +1,11 @@
-from fei.ppds import Thread, Mutex, Semaphore, print
-
 from random import randint
 from time import sleep
+
+from fei.ppds import Thread, Mutex, Semaphore, print
+
+
+# fronta implementovana slabymi semaformi - ked kazde vlakno ma lokalnu premennu nejaky semafor,
+# ktory sa uklada do pola zdielaneho objektu
 
 
 class Shared:
