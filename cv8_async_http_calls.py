@@ -13,7 +13,6 @@ async def task(name, work_queue):
                 await response.text()
             elapsed = time.perf_counter() - time_start
             print(f'Task {name} done. Elapsed: {elapsed:.1f}')
-            yield
 
 
 async def main():
@@ -23,7 +22,6 @@ async def main():
         'http://google.com',
         'http://microsoft.com',
         'http://facebook.com',
-        'http://uim.fei.stuba.sk',
         'http://twitter.com',
         'http://apple.com',
         'http://github.com'
@@ -40,4 +38,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
