@@ -1,20 +1,30 @@
-def my_generator(n):
+def simple_generator(n):
     while n:
         n -= 1
         yield n
 
 
-g = my_generator(3)
-print(g)
-print(next(g))
-print(next(g))
-print(next(g))
+def test_generator():
+    generator = simple_generator(3)
 
-try:
-    print(next(g))
-except StopIteration:
-    print('StopIteration raised in my_generator')
+    print(generator)
+
+    try:
+        print(next(generator))
+        print(next(generator))
+        print(next(generator))
+        print(next(generator))
+    except StopIteration:
+        print('Stop Iteration raised.')
+        print()
+
+    print(x for x in range(10))
+    print(list(x for x in range(10)))
 
 
-for i in my_generator(4):
-    print(i)
+def main():
+    test_generator()
+
+
+if __name__ == "__main__":
+    main()

@@ -2,73 +2,55 @@ import sys
 
 
 def consumer(func):
-    def wrapper(*args, **kvargs):
-        gen = func(*args, **kvargs)
+    def wrapper(*args, **kwargs):
+        gen = func(*args, **kwargs)
         next(gen)
         return gen
-
     return wrapper
 
 
-def cat(file, generator):
+def cat(file, gen):
     for line in file:
-        generator.send(line)
-    generator.close()
+        gen.send(line)
+    gen.close()
 
 
-# decorator usage:
-# @consumer == (grep = consumer(grep))
 @consumer
-def grep(substring,  generator):
+def grep(substring, gen):
     try:
         while True:
             line = (yield)
-            generator.send(line.count(substring))
+            gen.send(line.count(substring))
     except GeneratorExit:
-        generator.close()
+        gen.close()
+
 
 @consumer
-def word_count(substring):
-    cnt = 0
+def counter(substring):
+    n = 0
     try:
         while True:
-            cnt += (yield)
+            n += (yield)
     except GeneratorExit:
-        print(substring, cnt, flush=True)
-
-@consumer
-def dispatch(greps):
-    try:
-        while True:
-            line = (yield)
-            for g in greps:
-                g.send(line)
-    except GeneratorExit:
-        for g in greps:
-            g.close()
+        return substring, n
 
 
 def main():
-    if len(sys.argv) < 3:
-        print('usage: grep.py <string> ... <file>')
+    if not len(sys.argv) == 3:
         sys.exit(-1)
 
-    file = open(sys.argv[-1])
-    substrings = sys.argv[1: -1]
-    greps = []
+    file = open(sys.argv[2])
+    substring = sys.argv[1]
 
-    for substring in substrings:
-        wc_generator = word_count(substring)
-        # next(wc_generator) not needed when decorator used
+    word_counter_generator = counter(substring)
+    # next(word_counter_generator)
 
-        grep_generator = grep(substring, wc_generator)
-        # next(grep_generator)  not needed when decorator used
+    grep_generator = grep(substring, word_counter_generator)
+    # next(grep_generator)
 
-        greps.append(grep_generator)
+    cat(file, grep_generator)
 
-    disp = dispatch(greps)
-    # next(disp)
-    cat(file, disp)
+    print()
 
 
 if __name__ == '__main__':

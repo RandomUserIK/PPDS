@@ -1,13 +1,13 @@
-class MyIterator(object):
-    def __init__(self, xs):
-        self.xs = xs
+class MyIterator:
+    def __init__(self, n):
+        self.n = n
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self.xs:
-            return self.xs.pop(0)
+        if self.n:
+            return self.n.pop(0)
         raise StopIteration
 
 
@@ -16,6 +16,15 @@ def test1_my_iterator(text):
     print('-' * (len(text) + 1))
 
     print(MyIterator([0, 1, 2]))
+
+    it = MyIterator([1, 2])
+    try:
+        print(next(it))
+        print(next(it))
+        print(next(it))
+    except StopIteration:
+        print('Stop Iteration raised.')
+
     for i in MyIterator([0, 1, 2]):
         print(i)
     print()
@@ -39,6 +48,10 @@ def test2_my_iterator(text):
         print('StopIteration raised')
 
 
-if __name__ == '__main__':
-    test1_my_iterator('test1')
-    test2_my_iterator('test2')
+def main():
+    test1_my_iterator('test 1')
+    test2_my_iterator('test 2')
+
+
+if __name__ == "__main__":
+    main()
