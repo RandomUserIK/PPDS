@@ -1,18 +1,18 @@
 import queue
+import time
 
 
 def task(name, queue):
     while not queue.empty():
-        count = queue.get()
-        total = 0
-
+        delay = queue.get()
         print(f"Task {name} running")
 
-        for x in range(count):
-            total += 1
-            yield
+        time_start = time.perf_counter()
+        time.sleep(delay)
+        elapsed = time.perf_counter() - time_start
 
-        print(f"Task {name} total: {total}")
+        print(f"Task {name} elapsed time: {elapsed:.1f}")
+        yield
 
 
 def main():
@@ -24,6 +24,7 @@ def main():
     tasks = [task("One", work_queue), task("Two", work_queue)]
 
     done = False
+    start_time = time.perf_counter()
 
     while not done:
         for t in tasks:
@@ -31,8 +32,10 @@ def main():
                 next(t)
             except StopIteration:
                 tasks.remove(t)
-            if len(tasks) == 0:
-                done = True
+                if len(tasks) == 0:
+                    done = True
+    elapsed = time.perf_counter() - start_time
+    print(f"\nTotal elapsed time: {elapsed:.1f}")
 
 
 if __name__ == "__main__":

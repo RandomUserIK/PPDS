@@ -1,7 +1,7 @@
 import asyncio
-import aiohttp
 import time
 
+import aiohttp
 
 URLS = [
     'http://dsl.sk',
@@ -11,16 +11,17 @@ URLS = [
 ]
 
 
-async def request_greetings(work_queue) -> str:
+async def request_greetings(work_queue):
     responses = []
     async with aiohttp.ClientSession() as session:
         while not work_queue.empty():
             url = await work_queue.get()
+
             async with session.get(url) as response:
-                resp = await response.text()
-                responses.append(resp)
-    texts = '\n'.join(responses)
-    return texts
+                response_text = await response.text()
+                responses.append(response_text)
+
+    return '\n'.join(responses)
 
 
 async def main():
@@ -29,15 +30,17 @@ async def main():
     for url in URLS:
         await work_queue.put(url)
 
-    t1 = time.perf_counter()
-
-    greetings = await asyncio.gather(
+    start_time = time.perf_counter()
+    data = await asyncio.gather(
+        request_greetings(work_queue),
         request_greetings(work_queue),
         request_greetings(work_queue)
     )
+    end_time = time.perf_counter() - start_time
 
-    print(time.perf_counter() - t1, 'seconds passed')
-    print('\n'.join(greetings))
+    print(f'Time elapsed: {end_time:.4f}')
+    print('\n'.join(data))
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     asyncio.run(main())
